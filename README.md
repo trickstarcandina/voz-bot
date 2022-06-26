@@ -1,25 +1,2 @@
-# Wynn discord bot
-
-## [Avatar Bot](https://www.pixiv.net/en/artworks/66087872)
-
-This avatar drawn by [Lyrin](https://www.pixiv.net/en/users/12546488). 
-Thank you so much for the picture.
-
-## Run bot
-
-### 1. Install
-```
-npm i
-```
-### 2. Start bot
-```
-npm run start
-```
-### 3. Update
-```
-1. npm install -g npm-check-updates
-2. ncu -u
-3. npm update
-or 
-npm install
-```
+Avatar Bot
+![image](https://user-images.githubusercontent.com/61593963/175804552-1c3cfca0-4ede-4d2b-bc8b-edd9a60a7030.png)
