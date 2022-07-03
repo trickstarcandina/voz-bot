@@ -41,7 +41,7 @@ module.exports = {
 			{ rate: 0.3, name: 'crab' },
 			{ rate: 0.4, name: 'shrimp' },
 			{ rate: 0.5, name: 'jellyfish' },
-			{ rate: 0.6, name: 'squid' },
+			{ rate: 0.7, name: 'squid' },
 			{ rate: 0.75, name: 'dolphin' },
 			{ rate: 0.77, name: 'shark' }, // 0.03
 			{ rate: 0.79, name: 'crocodile' }, // 0.02
