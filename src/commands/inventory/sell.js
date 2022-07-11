@@ -84,7 +84,7 @@ class UserCommand extends WynnCommand {
 	}
 
 	async sellFish(message, t, userId, tag, name, amount) {
-		if (amount !== 'all' && NaN(amount) && Number(amount) < 1) {
+		if (amount !== 'all' && isNaN(amount) && Number(amount) < 1) {
 			return await utils.returnSlashAndMessage(
 				message,
 				t('commands/sell:fisherrorinput', {
