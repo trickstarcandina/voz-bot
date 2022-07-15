@@ -1,6 +1,9 @@
 module.exports = {
 	collect: {
-		fishing: 300000,
+		tub: 120000,
+		lake: 180000,
+		river: 240000,
+		sea: 300000,
 		species: 10000,
 		buy: 10000
 	},

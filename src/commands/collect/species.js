@@ -63,38 +63,12 @@ class UserCommand extends WynnCommand {
 	}
 
 	async mainProcess(message, t, input) {
-		if (collect.fishing.allelement.includes(input.toLowerCase())) {
-			const infoFish = await this.container.client.db.getFishByName(input.toLowerCase());
-			let emoji = infoFish.emoji;
-			let temp;
-			if ((temp = emoji.match(/:[0-9]+>/))) {
-				temp = 'https://cdn.discordapp.com/emojis/' + temp[0].match(/[0-9]+/)[0] + '.';
-				if (emoji.match(/<a:/)) temp += 'gif';
-				else temp += 'png';
-				emoji = temp;
-			} else {
-				emoji = undefined;
-			}
-			let map = new Map();
-			configSell.fishing.forEach((object) => {
-				map.set(object.name, object.price);
-			});
-			let embedMSG = new MessageEmbed()
-				.setTitle(`${infoFish.emoji} ${infoFish.name}`)
-				.setDescription('`' + infoFish.description + '`')
-				.setThumbnail(emoji)
-				.addFields(
-					{
-						name: t(`commands/species:name`),
-						value: '`' + (map.has(infoFish.name) === true ? t(`commands/fishing:${infoFish.name}`) : `${infoFish.name}`) + '`'
-					},
-					{ name: t(`commands/species:rarity`), value: '`' + t(`commands/fishing:${infoFish.rarity}`) + '`' },
-					{
-						name: t(`commands/species:price`),
-						value: '`' + (map.has(infoFish.name) === true ? map.get(infoFish.name).toString() : '???') + '`'
-					}
-				);
-			return await utils.returnSlashAndMessage(message, { embeds: [embedMSG] });
+		const inputPreParse = input.toLowerCase().replace('con ', '').replace('con', '');
+		if (collect.fishing.listname.includes(inputPreParse)) {
+			return await this.getInfoFish(message, t, inputPreParse);
+		} else if (collect.fishing.listnameVN.includes(inputPreParse)) {
+			const index = collect.fishing.listnameVN.indexOf(inputPreParse);
+			return await this.getInfoFish(message, t, collect.fishing.listname[index]);
 		} else if (input.toLowerCase() === 'listfish') {
 			const infoFish = await this.container.client.db.getAllFish();
 			let result = '';
@@ -111,6 +85,40 @@ class UserCommand extends WynnCommand {
 				})
 			);
 		}
+	}
+
+	async getInfoFish(message, t, name) {
+		const infoFish = await this.container.client.db.getFishByName(name);
+		let emoji = infoFish.emoji;
+		let temp;
+		if ((temp = emoji.match(/:[0-9]+>/))) {
+			temp = 'https://cdn.discordapp.com/emojis/' + temp[0].match(/[0-9]+/)[0] + '.';
+			if (emoji.match(/<a:/)) temp += 'gif';
+			else temp += 'png';
+			emoji = temp;
+		} else {
+			emoji = undefined;
+		}
+		let map = new Map();
+		configSell.fishing.forEach((object) => {
+			map.set(object.name, object.price);
+		});
+		let embedMSG = new MessageEmbed()
+			.setTitle(`${infoFish.emoji} ${infoFish.name}`)
+			.setDescription('`' + infoFish.description + '`')
+			.setThumbnail(emoji)
+			.addFields(
+				{
+					name: t(`commands/species:name`),
+					value: '`' + (map.has(infoFish.name) === true ? t(`commands/fishing:${infoFish.name}`) : `${infoFish.name}`) + '`'
+				},
+				{ name: t(`commands/species:rarity`), value: '`' + t(`commands/fishing:${infoFish.rarity}`) + '`' },
+				{
+					name: t(`commands/species:price`),
+					value: '`' + (map.has(infoFish.name) === true ? map.get(infoFish.name).toString() : '???') + '`'
+				}
+			);
+		return await utils.returnSlashAndMessage(message, { embeds: [embedMSG] });
 	}
 
 	async execute(interaction) {

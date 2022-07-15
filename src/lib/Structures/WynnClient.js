@@ -75,6 +75,10 @@ async function resetCooldown(idUser, command) {
 	// console.log(mapCooldown.get('662508642251309057'));
 }
 
+async function setCustomCooldown(id, name, time) {
+	return container.client.options.timeouts.set(`${id}_${name}`, Date.now() + time);
+}
+
 async function resetCustomCooldown(id, name) {
 	return container.client.options.timeouts.set(`${id}_${name}`, Date.now() + 8000);
 }
@@ -138,6 +142,7 @@ class WynnClient extends SapphireClient {
 		this.checkTimeCoolDownWithCheckSpam = checkTimeCoolDownWithCheckSpam.bind(this);
 		this.resetCooldown = resetCooldown.bind(this);
 		this.resetCustomCooldown = resetCustomCooldown.bind(this);
+		this.setCustomCooldown = setCustomCooldown.bind(this);
 		//cache array lottery
 		this.loadArrayLottery = loadArrayLottery.bind(this);
 		this.setArrayLottery = setArrayLottery.bind(this);

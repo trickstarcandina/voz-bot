@@ -29,12 +29,7 @@ class UserCommand extends WynnCommand {
 				return await reminderCaptcha(message, this.container.client, message.author.id, message.author.tag);
 			}
 			const t = await fetchT(message);
-			const checkCoolDown = await this.container.client.checkTimeCoolDownWithCheckSpam(
-				message.author.id,
-				this.name,
-				coolDown.collect.fishing,
-				t
-			);
+			const checkCoolDown = await this.container.client.checkTimeCoolDownWithCheckSpam(message.author.id, this.name, coolDown.collect.sea, t);
 			if (checkCoolDown) {
 				if (checkCoolDown.image !== undefined) {
 					return await utils.sendCaptchaImage(
@@ -70,6 +65,18 @@ class UserCommand extends WynnCommand {
 
 	async mainProcess(message, t, userId, tag) {
 		const itemFish = await this.container.client.db.getItemFishByDiscordId(userId);
+		//reset cool down real
+		//set to cache client
+		/*
+			REFACTOR THIS
+		*/
+		if (itemFish.location !== 'sea') {
+			let coolDownReal = new Map();
+			coolDownReal.set('tub', coolDown.collect.tub);
+			coolDownReal.set('lake', coolDown.collect.lake);
+			coolDownReal.set('river', coolDown.collect.river);
+			await this.container.client.setCustomCooldown(userId, this.name, coolDownReal.get(itemFish.location));
+		}
 		if (itemFish.bait < 1) {
 			return await utils.returnSlashAndMessage(
 				message,
@@ -80,6 +87,10 @@ class UserCommand extends WynnCommand {
 			);
 		}
 		const locationFishing = collect.fishing;
+		//set to cache client
+		/*
+			REFACTOR THIS
+		*/
 		let map = new Map();
 		map.set('tub', locationFishing.tub);
 		map.set('lake', locationFishing.lake);
@@ -90,7 +101,7 @@ class UserCommand extends WynnCommand {
 		let arrayRate = map.get(itemFish.location);
 		for (let i = 0; i < arrayRate.length; i++) {
 			if (random <= arrayRate[i].rate) {
-				resultFishing = arrayRate[i].name;
+				resultFishing = utils.pickRandom(arrayRate[i].name);
 				break;
 			}
 		}
