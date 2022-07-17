@@ -65,18 +65,6 @@ class UserCommand extends WynnCommand {
 
 	async mainProcess(message, t, userId, tag) {
 		const itemFish = await this.container.client.db.getItemFishByDiscordId(userId);
-		//reset cool down real
-		//set to cache client
-		/*
-			REFACTOR THIS
-		*/
-		if (itemFish.location !== 'sea') {
-			let coolDownReal = new Map();
-			coolDownReal.set('tub', coolDown.collect.tub);
-			coolDownReal.set('lake', coolDown.collect.lake);
-			coolDownReal.set('river', coolDown.collect.river);
-			await this.container.client.setCustomCooldown(userId, this.name, coolDownReal.get(itemFish.location));
-		}
 		if (itemFish.bait < 1) {
 			return await utils.returnSlashAndMessage(
 				message,
@@ -117,6 +105,20 @@ class UserCommand extends WynnCommand {
 					user: tag
 				})
 			);
+		}
+		//reset cool down real
+		//set to cache client
+		/*
+			REFACTOR THIS
+		*/
+		if (collect.fishing.increaseturn.includes(resultFishing)) {
+			await this.container.client.setCustomCooldown(userId, this.name, 0);
+		} else if (itemFish.location !== 'sea') {
+			let coolDownReal = new Map();
+			coolDownReal.set('tub', coolDown.collect.tub);
+			coolDownReal.set('lake', coolDown.collect.lake);
+			coolDownReal.set('river', coolDown.collect.river);
+			await this.container.client.setCustomCooldown(userId, this.name, coolDownReal.get(itemFish.location));
 		}
 		let fishReceive = await this.container.client.db.getFishByName(resultFishing);
 		let newArray = itemFish.arrayFish.slice();

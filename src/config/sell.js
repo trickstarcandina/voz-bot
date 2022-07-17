@@ -13,6 +13,7 @@ module.exports = {
 		{ name: 'crab', price: 800 },
 		{ name: 'shrimp', price: 500 },
 		{ name: 'jellyfish', price: 700 },
-		{ name: 'dolphin', price: 8000 }
+		{ name: 'dolphin', price: 8000 },
+		{ name: 'starfish', price: 300 }
 	]
 };
