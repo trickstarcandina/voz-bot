@@ -9,8 +9,8 @@ class UserCommand extends WynnCommand {
 			...options,
 			name: 'add_fish',
 			description: 'add new fish',
-			usage: 'wadd_fish <id> <name> <rarity> <emoji>',
-			example: 'wadd_fish 100 frog normal 🐸'
+			usage: 'wadd_fish <id> <name> <rarity> <emoji> <description>',
+			example: 'wadd_fish 100 frog normal 🐸 ếch'
 		});
 	}
 
@@ -18,20 +18,30 @@ class UserCommand extends WynnCommand {
 		const t = await fetchT(message);
 		try {
 			if (process.env.OWNER_IDS.split(',').includes(message.author.id)) {
-				const id = await args.next();
-				const name = await args.next();
-				const rarity = await args.next();
-				const emoji = await args.next();
-				const description = await args.next();
-				if (name === null || rarity === null || id === null || isNaN(id) || emoji === null || description === null) {
+				if (args.parser.parserOutput.ordered.length < 5) {
 					return message.channel.send('Error input');
 				}
-				await this.container.client.db.addNewFish(id, name, rarity, emoji, description);
+				const input = [];
+				let description = '';
+				for (let i = 0; i < args.parser.parserOutput.ordered.length; i++) {
+					if (i === 0) {
+						input.push(parseInt(args.parser.parserOutput.ordered[i].value));
+					} else if (i < 4) {
+						input.push(args.parser.parserOutput.ordered[i].value);
+					} else {
+						description += args.parser.parserOutput.ordered[i].value + ' ';
+					}
+				}
+				input.push(description);
+				if (isNaN(input[0])) {
+					return message.channel.send('Error input');
+				}
+				await this.container.client.db.addNewFish(input[0], input[1], input[2], input[3], input[4]);
 				logger.warn(
-					`User ${message.author.id} add new fish ... id: ${id} - name: ${name} - rarity: ${rarity} - emoji: ${emoji} - description: ${description}`
+					`User ${message.author.id} add new fish ... id: ${input[0]} - name: ${input[1]} - rarity: ${input[2]} - emoji: ${input[3]} - description: ${input[4]}`
 				);
 				return message.channel.send(
-					`Success add new fish ... id: ${id} - name: ${name} - rarity: ${rarity} - emoji: ${emoji} - description: ${description}`
+					`Success add new fish ... id: ${input[0]} - name: ${input[1]} - rarity: ${input[2]} - emoji: ${input[3]} - description: ${input[4]}`
 				);
 			}
 		} catch (err) {

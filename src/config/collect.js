@@ -16,7 +16,8 @@ module.exports = {
 			'crab',
 			'shrimp',
 			'jellyfish',
-			'dolphin'
+			'dolphin',
+			'starfish'
 		],
 		listnameVN: [
 			'ếch',
@@ -33,7 +34,8 @@ module.exports = {
 			'cua',
 			'tôm',
 			'sứa',
-			'cá heo'
+			'cá heo',
+			'sao biển'
 		],
 		special: ['cá 3 tủi'],
 		increaseturn: ['starfish'],
