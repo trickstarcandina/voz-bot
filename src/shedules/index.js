@@ -22,14 +22,12 @@ exports.InitCron = async function (client) {
 			// '* * * * *',
 			'30 1-23/2 * * *',
 			async () => {
-				console.log('Start clear cooldown and spam');
 				await lotteryShedulesBackupLotteryArray(client);
 				//clear cooldown
 				client.options.timeouts.clear();
-				console.log('Clear cooldown success');
 				client.options.spamTime.clear();
 				client.options.spams.clear();
-				console.log('Clear spam success');
+				console.log('Success clear cooldown and spam');
 			},
 			{
 				scheduled: true

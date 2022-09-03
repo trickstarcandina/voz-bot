@@ -7,6 +7,7 @@ const utils = require('../../lib/utils');
 const coolDown = require('../../config/cooldown');
 const emoji = require('../../config/emoji');
 const configSell = require('../../config/sell');
+const collect = require('../../config/collect');
 
 const reminderCaptcha = require('../../utils/humanVerify/reminderCaptcha');
 
@@ -104,16 +105,32 @@ class UserCommand extends WynnCommand {
 		if (name === null) {
 			//case sell all fish
 			for (let i = 0; i < arrayFish.length; i++) {
-				if (arrayFish[i].amount > 0 && map.has(arrayFish[i].name)) {
+				if (arrayFish[i].amount > 0) {
+					let priceFish = 0;
+					if (collect.fishing.special.includes(arrayFish[i].name)) {
+						// break if case special - can not sell
+						continue;
+					} else if (map.has(arrayFish[i].name)) {
+						priceFish = map.get(arrayFish[i].name);
+					} else {
+						priceFish = map.get(this.container.client.options.fish.get('listinfo').get(arrayFish[i].name).rarity);
+					}
 					allFishSell += `${arrayFish[i].emoji} x ${arrayFish[i].amount} `;
-					moneyReceive += arrayFish[i].amount * map.get(arrayFish[i].name);
+					moneyReceive += arrayFish[i].amount * priceFish;
 					arrayFish[i].amount = 0;
 				}
 			}
 		} else {
 			let flag = 0;
 			for (let i = 0; i < arrayFish.length; i++) {
-				if (arrayFish[i].name === name && map.has(arrayFish[i].name)) {
+				if (arrayFish[i].name === name) {
+					let priceFish = 0;
+					if (map.has(arrayFish[i].name)) {
+						priceFish = map.get(arrayFish[i].name);
+					} else {
+						priceFish = map.get(this.container.client.options.fish.get('listinfo').get(arrayFish[i].name).rarity);
+					}
+
 					flag = 1;
 					if (amount === 'all') {
 						if (arrayFish[i].amount === 0) {
@@ -137,7 +154,7 @@ class UserCommand extends WynnCommand {
 						arrayFish[i].amount = arrayFish[i].amount - Number(amount);
 					}
 					allFishSell += `${arrayFish[i].emoji} x ${amount} `;
-					moneyReceive += Number(amount) * map.get(arrayFish[i].name);
+					moneyReceive += Number(amount) * priceFish;
 					break;
 				}
 			}
