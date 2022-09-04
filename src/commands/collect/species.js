@@ -30,7 +30,7 @@ class UserCommand extends WynnCommand {
 			if (this.container.client.options.spams.get(`${message.author.id}`) === 'warn' || (isBlock.length > 0 && !isBlock[0].isResolve)) {
 				return await reminderCaptcha(message, this.container.client, message.author.id, message.author.tag);
 			}
-			let input = await args.rest('string');
+			let input = await args.rest('string').catch(() => null);
 			if (input === null) {
 				return;
 			}
