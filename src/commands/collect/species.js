@@ -6,7 +6,6 @@ const { SlashCommandBuilder } = require('@discordjs/builders');
 const utils = require('../../lib/utils');
 const coolDown = require('../../config/cooldown');
 const configSell = require('../../config/sell');
-const collect = require('../../config/collect');
 const { MessageEmbed } = require('discord.js');
 const reminderCaptcha = require('../../utils/humanVerify/reminderCaptcha');
 

@@ -22,6 +22,7 @@ module.exports = {
 		{ name: 'shrimp', price: 500 }, //rare
 		{ name: 'jellyfish', price: 700 }, //rare
 		{ name: 'dolphin', price: 8000 }, // super
-		{ name: 'starfish', price: 300 } //ultra
+		{ name: 'starfish', price: 300 }, //ultra
+		{ name: 'cá 3 tủi', price: '?' } //ultra
 	]
 };
