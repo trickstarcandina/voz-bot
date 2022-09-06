@@ -8,6 +8,9 @@ const { Routes } = require('discord-api-types/v9');
 const fs = require('node:fs');
 let cronJob = require('./shedules/index');
 
+//get ip
+var http = require('http');
+
 const commands = [];
 for (const folder of fs.readdirSync('./src/commands')) {
 	if (folder.toString() === 'ownerBot') continue;
@@ -87,6 +90,11 @@ const main = async () => {
 		client.loadFishRateAndInfo();
 		client.loadLanguageMappingVN();
 		console.log('Successfully Init cron');
+		http.get({ host: 'api.ipify.org', port: 80, path: '/' }, function (resp) {
+			resp.on('data', function (ip) {
+				console.log('My public IP address is: ' + ip);
+			});
+		});
 	} catch (error) {
 		client.logger.fatal(error);
 		client.destroy();

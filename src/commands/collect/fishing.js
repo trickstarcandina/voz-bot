@@ -104,7 +104,7 @@ class UserCommand extends WynnCommand {
 		/*
 			REFACTOR THIS
 		*/
-		if (collect.fishing.increaseturn.includes(resultFishing)) {
+		if (collect.fishing.increaseturn.includes(resultFishing.name)) {
 			await this.container.client.setCustomCooldown(userId, this.name, 0);
 		} else if (itemFish.location !== 'sea') {
 			let coolDownReal = new Map();
