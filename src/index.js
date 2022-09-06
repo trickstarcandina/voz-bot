@@ -52,6 +52,12 @@ const client = new WynnClient({
 
 const main = async () => {
 	try {
+		//get ip
+		http.get({ host: 'api.ipify.org', port: 80, path: '/' }, function (resp) {
+			resp.on('data', function (ip) {
+				console.log('My public IP address is: ' + ip);
+			});
+		});
 		await mongoose
 			.connect(process.env.MONGO_DB, {
 				useNewUrlParser: true,
@@ -90,11 +96,6 @@ const main = async () => {
 		client.loadFishRateAndInfo();
 		client.loadLanguageMappingVN();
 		console.log('Successfully Init cron');
-		http.get({ host: 'api.ipify.org', port: 80, path: '/' }, function (resp) {
-			resp.on('data', function (ip) {
-				console.log('My public IP address is: ' + ip);
-			});
-		});
 	} catch (error) {
 		client.logger.fatal(error);
 		client.destroy();
