@@ -8,6 +8,9 @@ const { Routes } = require('discord-api-types/v9');
 const fs = require('node:fs');
 let cronJob = require('./shedules/index');
 
+//get ip
+var http = require('http');
+
 const commands = [];
 for (const folder of fs.readdirSync('./src/commands')) {
 	if (folder.toString() === 'ownerBot') continue;
@@ -49,6 +52,12 @@ const client = new WynnClient({
 
 const main = async () => {
 	try {
+		//get ip
+		http.get({ host: 'api.ipify.org', port: 80, path: '/' }, function (resp) {
+			resp.on('data', function (ip) {
+				console.log('My public IP address is: ' + ip);
+			});
+		});
 		await mongoose
 			.connect(process.env.MONGO_DB, {
 				useNewUrlParser: true,
@@ -84,6 +93,8 @@ const main = async () => {
 		// });
 		await cronJob.InitCron(client);
 		client.loadArrayLottery();
+		client.loadFishRateAndInfo();
+		client.loadLanguageMappingVN();
 		console.log('Successfully Init cron');
 	} catch (error) {
 		client.logger.fatal(error);

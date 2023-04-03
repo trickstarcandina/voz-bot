@@ -7,10 +7,10 @@ class UserCommand extends WynnCommand {
 	constructor(context, options) {
 		super(context, {
 			...options,
-			name: 'add_fish',
-			description: 'add new fish',
-			usage: 'wadd_fish <id> <name> <rarity> <emoji> <description>',
-			example: 'wadd_fish 100 frog normal 🐸 ếch'
+			name: 'add_language_mapping',
+			description: 'add language mapping',
+			usage: 'wadd_language_mapping <lang> <type> <key> <value>',
+			example: 'wadd_language_mapping VN listname frog ếch'
 		});
 	}
 
@@ -18,30 +18,25 @@ class UserCommand extends WynnCommand {
 		const t = await fetchT(message);
 		try {
 			if (process.env.OWNER_IDS.split(',').includes(message.author.id)) {
-				if (args.parser.parserOutput.ordered.length < 5) {
+				if (args.parser.parserOutput.ordered.length < 4) {
 					return message.channel.send('Error input');
 				}
 				const input = [];
 				let description = '';
 				for (let i = 0; i < args.parser.parserOutput.ordered.length; i++) {
-					if (i === 0) {
-						input.push(parseInt(args.parser.parserOutput.ordered[i].value));
-					} else if (i < 4) {
+					if (i < 3) {
 						input.push(args.parser.parserOutput.ordered[i].value);
 					} else {
 						description += args.parser.parserOutput.ordered[i].value + ' ';
 					}
 				}
 				input.push(description);
-				if (isNaN(input[0])) {
-					return message.channel.send('Error input');
-				}
-				await this.container.client.db.addNewFish(input[0], input[1], input[2], input[3], input[4]);
+				await this.container.client.db.addNewLanguageMapping(input[0], input[1], input[2], input[3]);
 				logger.warn(
-					`User ${message.author.id} add new fish ... id: ${input[0]} - name: ${input[1]} - rarity: ${input[2]} - emoji: ${input[3]} - description: ${input[4]}`
+					`User ${message.author.id} add language mapping ... lang: ${input[0]} - type: ${input[1]} - key: ${input[2]} - value: ${input[3]}`
 				);
 				return message.channel.send(
-					`Success add new fish ... id: ${input[0]} - name: ${input[1]} - rarity: ${input[2]} - emoji: ${input[3]} - description: ${input[4]}`
+					`Success add new language mapping ... lang: ${input[0]} - type: ${input[1]} - key: ${input[2]} - value: ${input[3]}`
 				);
 			}
 		} catch (err) {

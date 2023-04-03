@@ -92,9 +92,16 @@ async function sendCaptchaImage(userId, client, image, text, message, content) {
 	});
 }
 
+function getKeyByValueMap(map, searchValue) {
+	for (let [key, value] of map.entries()) {
+		if (value === searchValue) return key;
+	}
+}
+
 module.exports.pickRandom = pickRandom;
 module.exports.sendLoadingMessage = sendLoadingMessage;
 module.exports.returnContentForSlashOrSendMessage = returnContentForSlashOrSendMessage;
 module.exports.returnSlashAndMessage = returnSlashAndMessage;
 module.exports.smallNumberDisplay = smallNumberDisplay;
 module.exports.sendCaptchaImage = sendCaptchaImage;
+module.exports.getKeyByValueMap = getKeyByValueMap;

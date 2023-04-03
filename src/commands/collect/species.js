@@ -6,7 +6,6 @@ const { SlashCommandBuilder } = require('@discordjs/builders');
 const utils = require('../../lib/utils');
 const coolDown = require('../../config/cooldown');
 const configSell = require('../../config/sell');
-const collect = require('../../config/collect');
 const { MessageEmbed } = require('discord.js');
 const reminderCaptcha = require('../../utils/humanVerify/reminderCaptcha');
 
@@ -23,17 +22,17 @@ class UserCommand extends WynnCommand {
 	}
 
 	async messageRun(message, args) {
+		const t = await fetchT(message);
 		try {
 			let isBlock = await this.container.client.db.checkIsBlock(message.author.id);
 			if (isBlock === true) return;
 			if (this.container.client.options.spams.get(`${message.author.id}`) === 'warn' || (isBlock.length > 0 && !isBlock[0].isResolve)) {
 				return await reminderCaptcha(message, this.container.client, message.author.id, message.author.tag);
 			}
-			let input = await args.rest('string');
+			let input = await args.rest('string').catch(() => null);
 			if (input === null) {
 				return;
 			}
-			const t = await fetchT(message);
 			const checkCoolDown = await this.container.client.checkTimeCoolDownWithCheckSpam(
 				message.author.id,
 				this.name,
@@ -63,41 +62,23 @@ class UserCommand extends WynnCommand {
 	}
 
 	async mainProcess(message, t, input) {
-		if (collect.fishing.allelement.includes(input.toLowerCase())) {
-			const infoFish = await this.container.client.db.getFishByName(input.toLowerCase());
-			let emoji = infoFish.emoji;
-			let temp;
-			if ((temp = emoji.match(/:[0-9]+>/))) {
-				temp = 'https://cdn.discordapp.com/emojis/' + temp[0].match(/[0-9]+/)[0] + '.';
-				if (emoji.match(/<a:/)) temp += 'gif';
-				else temp += 'png';
-				emoji = temp;
-			} else {
-				emoji = undefined;
-			}
-			let map = new Map();
-			configSell.fishing.forEach((object) => {
-				map.set(object.name, object.price);
-			});
-			let embedMSG = new MessageEmbed()
-				.setTitle(`${infoFish.emoji} ${infoFish.name}`)
-				.setDescription('`' + infoFish.description + '`')
-				.setThumbnail(emoji)
-				.addFields(
-					{
-						name: t(`commands/species:name`),
-						value: '`' + (map.has(infoFish.name) === true ? t(`commands/fishing:${infoFish.name}`) : `${infoFish.name}`) + '`'
-					},
-					{ name: t(`commands/species:rarity`), value: '`' + t(`commands/fishing:${infoFish.rarity}`) + '`' },
-					{
-						name: t(`commands/species:price`),
-						value: '`' + (map.has(infoFish.name) === true ? map.get(infoFish.name).toString() : '???') + '`'
-					}
-				);
-			return await utils.returnSlashAndMessage(message, { embeds: [embedMSG] });
+		const inputPreParse = input.toLowerCase().replace('con ', '').replace('con', '');
+		if (this.container.client.options.fish.get('listname').includes(inputPreParse)) {
+			return await this.getInfoFish(message, t, inputPreParse, inputPreParse);
+		} else if (this.container.client.options.fish.get('listnameVN').includes(inputPreParse)) {
+			return await this.getInfoFish(
+				message,
+				t,
+				utils.getKeyByValueMap(this.container.client.options.fish.get('vi-VN').get('namefish'), inputPreParse),
+				inputPreParse
+			);
 		} else if (input.toLowerCase() === 'listfish') {
-			const infoFish = await this.container.client.db.getAllFish();
+			const infoFish = [...this.container.client.options.fish.get('listinfo').values()];
 			let result = '';
+			infoFish.sort(function (a, b) {
+				if (a.id < b.id) return -1;
+				if (a.id > b.id) return 1;
+			});
 			for (let i = 0; i < infoFish.length; i++) {
 				result += '`' + infoFish[i].id.toString() + '`' + '....' + infoFish[i].emoji + ' ' + infoFish[i].name + '\n';
 			}
@@ -111,6 +92,47 @@ class UserCommand extends WynnCommand {
 				})
 			);
 		}
+	}
+
+	async getInfoFish(message, t, name, nameLanguage) {
+		const infoFish = this.container.client.options.fish.get('listinfo').get(name);
+		let emoji = infoFish.emoji;
+		let temp;
+		if ((temp = emoji.match(/:[0-9]+>/))) {
+			temp = 'https://cdn.discordapp.com/emojis/' + temp[0].match(/[0-9]+/)[0] + '.';
+			if (emoji.match(/<a:/)) temp += 'gif';
+			else temp += 'png';
+			emoji = temp;
+		} else {
+			emoji = undefined;
+		}
+		let map = new Map();
+		configSell.fishing.forEach((object) => {
+			map.set(object.name, object.price);
+		});
+		let embedMSG = new MessageEmbed()
+			.setTitle(`${infoFish.emoji} ${nameLanguage}`)
+			.setDescription('`' + infoFish.description + '`')
+			.setThumbnail(emoji)
+			.addFields(
+				{
+					name: t(`commands/species:name`),
+					value: '`' + nameLanguage + '`'
+				},
+				{ name: t(`commands/species:rarity`), value: '`' + t(`commands/fishing:${infoFish.rarity}`) + '`' },
+				{
+					name: t(`commands/species:price`),
+					value:
+						'`' +
+						(map.has(infoFish.name) === true
+							? map.get(infoFish.name).toString()
+							: map.has(infoFish.rarity) === true
+							? map.get(infoFish.rarity).toString()
+							: '???') +
+						'`'
+				}
+			);
+		return await utils.returnSlashAndMessage(message, { embeds: [embedMSG] });
 	}
 
 	async execute(interaction) {
