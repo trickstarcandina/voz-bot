@@ -30,6 +30,7 @@ class UserCommand extends WynnCommand {
 			return await reminderCaptcha(message, this.container.client, message.author.id, message.author.tag);
 		}
 		try {
+			/*
 			const t = await fetchT(message);
 			let input1 = await args.next();
 			if (input1 === 'results') {
@@ -41,6 +42,7 @@ class UserCommand extends WynnCommand {
 			let userInfo = await this.container.client.db.fetchUser(message.author.id);
 			let betMoney = input1 === 'all' ? userInfo.money : Number(input1);
 			return await this.mainProcess(betMoney, input2, t, message, message.author.tag, userInfo);
+			*/
 		} catch (err) {
 			logger.error(err);
 			console.log(err);
@@ -153,6 +155,7 @@ class UserCommand extends WynnCommand {
 			return await reminderCaptcha(interaction, this.container.client, interaction.user.id, interaction.user.tag);
 		}
 		try {
+			/*
 			const t = await fetchT(interaction);
 			if (interaction.options.getSubcommand() === 'results') {
 				return this.embedResultLucky(interaction, t);
@@ -169,6 +172,7 @@ class UserCommand extends WynnCommand {
 				interaction.user.tag,
 				userInfo
 			);
+			*/
 		} catch (error) {
 			logger.error(error);
 			console.log(error);
